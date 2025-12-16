@@ -9,7 +9,7 @@ class Recruiter(Base):
     id = Column(Integer, primary_key=True, index=True)
 
     company_name = Column(String(255), nullable=False)
-    company_id = Column(String(255), nullable=False)
+    company_id = Column(String(10), nullable=False)
 
     company_address = Column(Text, nullable=False)
     contact_name = Column(String(255), nullable=False)
@@ -23,4 +23,4 @@ class Recruiter(Base):
     registration_cert_path = Column(Text, nullable=True)
     gst_cert_path = Column(Text, nullable=True)
 
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
