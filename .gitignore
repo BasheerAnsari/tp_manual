@@ -1,51 +1,33 @@
+# ===============================
+# Virtual Environment
+# ===============================
 dev/
 venv/
-.env
 
+# ===============================
+# Environment files
+# ===============================
+.env
 .env.*
 !.env.example
 
-__pycache__/
-*.py[cod]
-*$py.class
-
-build/
-dist/
-*.egg-info/
-.eggs/
-
+# ===============================
+# Logs
+# ===============================
 logs/
 *.log
 
-.coverage
-coverage.xml
-htmlcov/
-.pytest_cache/
+# ===============================
+# Python cache
+# ===============================
+__pycache__/
+*.pyc
+*.pyo
 
-.ipynb_checkpoints/
-
-*.pkl
-*.joblib
-*.h5
-*.onnx
-*.pt
-*.pth
-*.bin
-
-faiss_index/
-chroma/
-chromadb/
-
-uploads/
-tmp/
-temp/
-
-.DS_Store
-Thumbs.db
-
+# ===============================
+# OS / IDE
+# ===============================
 .vscode/
 .idea/
-*.swp
-*.swo
-
-docker-data/
+.DS_Store
+Thumbs.db
