@@ -7,8 +7,7 @@ from passlib.hash import bcrypt
 from core_services.app.models.recruiter_model import Recruiter
 from core_services.app.schemas.recruiter_schema import RecruiterLoginSchema
 from core_services.app.shared.helper.error_logger import log_errors
-
-from fastapi import HTTPException, status
+#from fastapi import HTTPException, status
 
 
 UPLOAD_DIR = "uploads/recruiter_docs"
@@ -19,14 +18,18 @@ def _save_file(file_obj):
     """
     Saves base64 file to uploads folder and returns file path
     """
-    file_name = f"{uuid.uuid4()}_{file_obj.fileName}"
-    file_path = os.path.join(UPLOAD_DIR, file_name)
+    try:
+        file_name = f"{uuid.uuid4()}_{file_obj.fileName}"
+        file_path = os.path.join(UPLOAD_DIR, file_name)
 
-    file_bytes = base64.b64decode(file_obj.fileBase64)
-    with open(file_path, "wb") as f:
-        f.write(file_bytes)
+        file_bytes = base64.b64decode(file_obj.fileBase64)
+        with open(file_path, "wb") as f:
+            f.write(file_bytes)
 
-    return file_path
+        return file_path
+
+    except Exception:
+        raise ValueError("Failed to save document")
 
 
 # signup service
@@ -49,14 +52,10 @@ def recruiter_signup_service(db: Session, data):
     gst_path = None
 
     if data.documents and data.documents.registrationCertificate:
-        registration_path = _save_file(
-            data.documents.registrationCertificate
-        )
+        registration_path = _save_file(data.documents.registrationCertificate)
 
     if data.documents and data.documents.gstCertificate:
-        gst_path = _save_file(
-            data.documents.gstCertificate
-        )
+        gst_path = _save_file(data.documents.gstCertificate)
 
     try:
         new_recruiter = Recruiter(

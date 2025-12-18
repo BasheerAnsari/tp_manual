@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from fastapi import HTTPException
+#from fastapi import HTTPException
+
 from core_services.app.models.job import Job
 from core_services.app.schemas.job import JOB
 from core_services.app.shared.helper.pagination import Paginator
@@ -30,7 +31,8 @@ class JobService:
 
         except Exception as e:
             db.rollback()
-            raise HTTPException(status_code=500, detail=f"Error creating job: {str(e)}")
+            #raise HTTPException(status_code=500, detail=f"Error creating job: {str(e)}")
+            raise ValueError("Failed to create job")
 
 
     @staticmethod
@@ -52,4 +54,5 @@ class JobService:
 
 
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error fetching jobs: {str(e)}")
+            #raise HTTPException(status_code=500, detail=f"Error fetching jobs: {str(e)}")
+            raise ValueError("Failed to fetch jobs")

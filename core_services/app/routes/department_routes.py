@@ -15,39 +15,38 @@ def create_department(
     payload: DepartmentCreateSchema,
     db: Session = Depends(get_db)
 ):
-    try:
-        dept = create_department_service(db, payload.department_name)
+    
+    dept = create_department_service(db, payload.department_name)
 
-        return api_response(
-            status_code=201,
-            successful=True,
-            message="Department created successfully",
-            data={"id": dept.id, "department_name": dept.department_name}
-        )
+    return api_response(
+        status_code=201,
+        successful=True,
+        message="Department created successfully",
+        data={
+            "id": dept.id,
+            "department_name": dept.department_name
+        }
+    )
 
-    except ValueError as ve:
-        return api_response(
-            status_code=400,
-            successful=False,
-            message=str(ve),
-            data=None
-        )
+    
 
-
-# GET ALL DEPARTMENTS (QUERY PARAM)
+# GET ALL DEPARTMENTS 
 @router.get("")
 def get_departments(
     search: str | None = None,
     db: Session = Depends(get_db)
 ):
-    depts = get_departments_service(db, search)
+    depts = get_departments_service(db)
 
     return api_response(
         status_code=200,
         successful=True,
         message="Departments fetched successfully",
         data=[
-            {"id": d.id, "department_name": d.department_name}
+            {
+                "id": d.id,
+                "department_name": d.department_name
+            }
             for d in depts
         ]
     )

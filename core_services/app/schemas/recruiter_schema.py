@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
+import re
 
 
 class FileSchema(BaseModel):
@@ -14,15 +15,15 @@ class DocumentsSchema(BaseModel):
 
 class CompanyInfoSchema(BaseModel):
     companyName: str = Field(..., min_length=3, description="Company name is required")
-    companyId: str = Field(..., min_length=10, max_length=10, description="Company PAN is required")
+    companyId: str = Field(..., min_length=10, max_length=10, description="Company PAN is required")           # company pan validation '10' 'ABCDC1234V' pattern="^[A-Z0-9]{10}$"
     companyAddress: str = Field(..., min_length=3, description="Company address is required")
     contact_name: str = Field(...,  min_length=3, description="Contact name is required")
-    contactNumber: str = Field(..., min_length=10, max_length=10, description="Contact number is required")
+    contactNumber: str = Field(..., min_length=10, max_length=10, pattern="^[0-9]{10}$", description="Contact number is required")
     email: Optional[EmailStr] = None
 
 
 class CredentialsSchema(BaseModel):
-    username: str = Field(..., min_length=3, description="Username is required")
+    username: EmailStr = Field(..., min_length=3, description="Username is required")
     password: str = Field(..., min_length=6, description="Password is required")
 
 
