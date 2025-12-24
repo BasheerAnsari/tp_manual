@@ -6,8 +6,46 @@ from core_services.app.core.database import get_db
 from core_services.app.services.job_service import JobService
 from core_services.app.shared.helper.api_response import api_response
 
+from fastapi import UploadFile, File
+import shutil, uuid, os
+from core_services.app.services.job_service import JobService
+from core_services.app.shared.helper.api_response import api_response
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
+import docx2txt
+
 
 job_router = APIRouter(prefix="/api/job", tags=["jobs"])
+
+
+def load_jd_text(file_path: str) -> str:
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == ".pdf":
+        docs = PyPDFLoader(file_path).load()
+        return "\n".join(d.page_content for d in docs)
+
+    if ext == ".docx":
+        return docx2txt.process(file_path)
+
+    return TextLoader(file_path, encoding="utf-8").load()[0].page_content
+
+@job_router.post("/extract-jd")
+async def extract_job_from_jd(file: UploadFile = File(...)):
+    file_path = f"uploads/{uuid.uuid4()}_{file.filename}"
+
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+
+    jd_text = load_jd_text(file_path)
+    extracted_job = JobService.extract_job_from_jd(jd_text)
+
+    return api_response(
+        status_code=200,
+        successful=True,
+        message="Job details extracted from JD",
+        data=extracted_job
+    )
+
 
 
 # Create Job

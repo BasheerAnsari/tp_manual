@@ -33,7 +33,6 @@ def create_department(
 # GET ALL DEPARTMENTS 
 @router.get("")
 def get_departments(
-    search: str | None = None,
     db: Session = Depends(get_db)
 ):
     depts = get_departments_service(db)

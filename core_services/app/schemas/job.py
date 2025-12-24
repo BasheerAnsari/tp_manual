@@ -11,3 +11,11 @@ class JOB(BaseModel):
     employment_type: str = Field(..., min_length=1, description="Employment type cannot be empty")
     user_id: conint(gt=0) = Field(..., description="User ID must be greater than 0")
 
+class JobExtractResponse(BaseModel):
+    job_title: str
+    department: str
+    job_description: str
+    required_skills: List[str]
+    experience_level: str
+    location: str
+    employment_type: str

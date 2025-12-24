@@ -16,7 +16,7 @@ class CandidateSignupSchema(BaseModel):
     )
 
 
-# CANDIDATE SIGNIN (USED BY COMMON SIGNIN SERVICE)
+# CANDIDATE SIGNIN                                                                                 (USED BY COMMON SIGNIN SERVICE)
 class CandidateSigninSchema(BaseModel):
     email: EmailStr = Field(..., description="Candidate email")
     password: str = Field(..., description="Candidate password")

@@ -104,6 +104,14 @@ def candidate_profile_update_service(
     if not candidate:
         raise ValueError("Candidate not found")
 
+    # MANDATORY RESUME VALIDATION
+    if not data.resumeBase64 or data.resumeBase64.strip().lower() == "string":
+        raise ValueError("Resume is mandatory and must be a valid file")
+
+    if not data.resumeFileName:
+        raise ValueError("Resume file name is required")
+
+    # Save resume only after validation
     resume_path = _save_resume(
         data.resumeFileName,
         data.resumeBase64
@@ -112,7 +120,7 @@ def candidate_profile_update_service(
     try:
         candidate.full_name = data.full_name
         candidate.years_of_experience = data.years_of_experience
-        candidate.skills = data.skills                                       # .split(',') [ make the list of skills ]
+        candidate.skills = data.skills
         candidate.education = data.education
         candidate.resume_path = resume_path
         candidate.is_profile_completed = True

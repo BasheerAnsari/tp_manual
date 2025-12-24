@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -13,6 +16,7 @@ from core_services.app.models.recruiter_model import Recruiter
 from core_services.app.config import get_settings
 from core_services.app.shared.helper.validation_handler import validation_exception_handler
 from core_services.app.shared.helper.global_exception_handler import global_exception_handler
+
 
 settings = get_settings()
 
@@ -34,7 +38,7 @@ app.add_exception_handler(
 Base.metadata.create_all(bind=engine)
 
 # Common auth routes (signin for the candidate and recruiter)
-app.include_router(auth_router)
+#app.include_router(auth_router)
 
 # Rcruiter API
 app.include_router(recruiter_router)

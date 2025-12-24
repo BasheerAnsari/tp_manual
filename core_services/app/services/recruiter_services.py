@@ -14,21 +14,53 @@ UPLOAD_DIR = "uploads/recruiter_docs"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
+# def _save_file(file_obj):
+#     """
+#     Saves base64 file to uploads folder and returns file path
+#     """
+#     try:
+#         file_name = f"{uuid.uuid4()}_{file_obj.fileName}"
+#         file_path = os.path.join(UPLOAD_DIR, file_name)
+
+#         file_bytes = base64.b64decode(file_obj.fileBase64)
+#         with open(file_path, "wb") as f:
+#             f.write(file_bytes)
+
+#         return file_path
+
+#     except Exception:
+#         raise ValueError("Failed to save document")
 def _save_file(file_obj):
     """
     Saves base64 file to uploads folder and returns file path
     """
     try:
+        #  Clean base64 string
+        base64_str = file_obj.fileBase64.strip()
+
+        # Remove data:image/...;base64 header if present
+        if "," in base64_str:
+            base64_str = base64_str.split(",")[1]
+
+        # Fix missing padding
+        missing_padding = len(base64_str) % 4
+        if missing_padding:
+            base64_str += "=" * (4 - missing_padding)
+
+        # Decode safely
+        file_bytes = base64.b64decode(base64_str)
+
+        # Save file
         file_name = f"{uuid.uuid4()}_{file_obj.fileName}"
         file_path = os.path.join(UPLOAD_DIR, file_name)
 
-        file_bytes = base64.b64decode(file_obj.fileBase64)
         with open(file_path, "wb") as f:
             f.write(file_bytes)
 
         return file_path
 
-    except Exception:
+    except Exception as e:
+        print("Base64 file save error:", e)
         raise ValueError("Failed to save document")
 
 
