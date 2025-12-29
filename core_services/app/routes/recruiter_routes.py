@@ -40,7 +40,7 @@ def recruiter_signin(data: RecruiterLoginSchema, db: Session = Depends(get_db)):
             status_code=200,
             successful=True,
             message="Signin successful",
-            data=result
+            data=result['user_id']
         )
 
     except ValueError as ve:

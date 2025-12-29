@@ -1,6 +1,6 @@
 import os
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 #from fastapi import HTTPException
 
 from core_services.app.models.job import Job
@@ -8,7 +8,6 @@ from core_services.app.schemas.job import JOB
 from core_services.app.shared.helper.pagination import Paginator
 
 from langchain_openai import AzureChatOpenAI
-from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 import json
 import re
@@ -24,15 +23,32 @@ class JobService:
             deployment_name=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
             api_version="2024-12-01-preview"
         )
-        # llm = ChatOllama(
-        #     model="llama3.2:1b",
-        #     base_url="http://localhost:11434"
-        # )
+        
 
         prompt = ChatPromptTemplate.from_template("""
 You are an HR system.
 
-Extract job details from the Job Description below.
+Your task is to extract structured job information from the provided content.
+
+STRICT RULES:
+- Return ONLY valid JSON (no markdown, no explanations)
+- Do NOT invent information that is not present
+- Use professional HR language
+- Keep values concise and clean
+
+FIELD-SPECIFIC RULES:
+- job_description:
+  - Write a PROFESSIONAL SUMMARY of the role
+  - 10 to 15 lines
+  - Combine responsibilities, expectations, and scope
+  - No bullet points
+  - Plain paragraph text
+
+- required_skills:
+  - ONLY technologies, tools, frameworks, or platforms
+  - ONE technology per list item
+  - No soft skills
+  - No sentences or explanations
 
 Return STRICT JSON with these fields:
 - job_title
@@ -42,6 +58,17 @@ Return STRICT JSON with these fields:
 - experience_level
 - location
 - employment_type
+
+JSON SCHEMA:
+{{
+  "job_title": string,
+  "department": string,
+  "job_description": string,
+  "required_skills": string[],
+  "experience_level": string,
+  "location": string,
+  "employment_type": string
+}}
 
 JD:
 {jd_text}
@@ -58,16 +85,7 @@ JD:
     @staticmethod
     def create_job(job: JOB, db: Session):
         try:
-            db_job = Job(
-                job_title=job.job_title,
-                department=job.department,
-                job_description=job.job_description,
-                required_skills=job.required_skills,
-                experience_level=job.experience_level,
-                location=job.location,
-                employment_type=job.employment_type,
-                user_id=job.user_id
-            )
+            db_job = Job(**job.dict())
 
             db.add(db_job)
             db.commit()
@@ -82,19 +100,35 @@ JD:
 
 
     @staticmethod
-    def get_jobs(user_id: int, job_title: str, location: str, page: int, per_page: int, db: Session):
+    def get_jobs(user_id: int, job_title: str, location: str, search: str | None=None,  page: int = 1, per_page: int = 10, db: Session = None):
         try:
             query = db.query(Job)
 
-            filters = [Job.user_id == user_id]  
+            filters = [Job.user_id == user_id]                                 # select * from the job where userid==userid 
 
             if job_title:   
-                filters.append(Job.job_title.ilike(f"%{job_title}%"))
+                filters.append(Job.posting_title.ilike(f"%{job_title}%"))      #  where tile == job tile   
 
-            if location:    
-                filters.append(Job.location.ilike(f"%{location}%"))
+            if location:
+                filters.append(
+                    or_(
+                        Job.city.ilike(f"%{location}%"),
+                        Job.state.ilike(f"%{location}%"),
+                        Job.country.ilike(f"%{location}%")                     # where location in city or state or country
+                    )
+                )
+
+            if search:
+                search_filter = or_(
+                    Job.posting_title.ilike(f"%{search}%"),
+                    Job.city.ilike(f"%{search}%"),
+                    Job.state.ilike(f"%{search}%"),
+                    Job.country.ilike(f"%{search}%")
+                )
+
+                filters.append(search_filter)
              
-            query = query.filter(and_(*filters))
+            query = query.filter(and_(*filters))                               # complete query 
 
             return Paginator.pagination(query,page,per_page)
 
