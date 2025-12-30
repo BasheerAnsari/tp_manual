@@ -1,0 +1,18 @@
+{
+  "recruiter": {
+    "code": "recruiter",
+    "description": "Recruiter user"
+  },
+  "candidate": {
+    "code": "candidate",
+    "description": "Candidate user"
+  },
+  "admin": {
+    "code": "admin",
+    "description": "Admin user"
+  },
+  "super_admin": {
+    "code": "super_admin",
+    "description": "Super administrator"
+  }
+}

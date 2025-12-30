@@ -10,3 +10,10 @@ tabulate
 bcrypt==4.0.1
 passlib==1.7.4
 email-validator
+docx2txt
+pypdf
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langchain-ollama

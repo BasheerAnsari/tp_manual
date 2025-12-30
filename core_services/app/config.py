@@ -8,6 +8,10 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DATABASE_URL: str
+
+    AZURE_OPENAI_API_KEY: str
+    AZURE_OPENAI_ENDPOINT: str
+    AZURE_OPENAI_DEPLOYMENT: str
     
     JWT_SECRET_KEY: Optional[str] = None
     JWT_ALGORITHM: Optional[str] = None
