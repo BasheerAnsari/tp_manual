@@ -14,7 +14,7 @@ from langchain_community.document_loaders import PyPDFLoader, TextLoader
 import docx2txt
 
 
-job_router = APIRouter(prefix="/api/job", tags=["jobs"])
+job_router = APIRouter(prefix="/api/job", tags=["jobs"])      # api prefix api
 
 
 def load_jd_text(file_path: str) -> str:
@@ -49,7 +49,7 @@ async def extract_job_from_jd(file: UploadFile = File(...)):
 
 
 # Create Job
-@job_router.post("/")
+@job_router.post("/")                                          # /job
 async def create_job(job: JOB, db: Session = Depends(get_db)):
     created_job = JobService.create_job(job, db)
     #return {"message": "Job created successfully", "job_id": created_job.id}
@@ -64,7 +64,7 @@ async def create_job(job: JOB, db: Session = Depends(get_db)):
 
 
 # Get Job List
-@job_router.get("/")
+@job_router.get("/")                              # /job
 async def get_jobs(
     job_title: str | None = Query(default=None, description="Filter by job title"),
     location: str | None = Query(default=None, description="Filter by job location"),
@@ -83,7 +83,7 @@ async def get_jobs(
     )
     
     #return JobService.get_jobs(user_id,job_title, location, page, per_page, db)
-
+    #print("data",data)
     return api_response(
         status_code=200,
         successful=True,
